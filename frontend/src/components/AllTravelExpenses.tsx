@@ -13,20 +13,17 @@ import {
   TableBody,
   Button,
   TablePagination,
-  IconButton,
   Box,
   TextField,
-} from '@mui/material';
-import detailsIcon from '../assets/more2.png';
-import editIcon from '../assets/edit2.png';
-import deleteIcon from '../assets/delete2.png';
+} from "@mui/material";
+import detailsIcon from "../assets/more2.png";
+import editIcon from "../assets/edit2.png";
+import deleteIcon from "../assets/delete2.png";
 import { IExpense } from "../models/expenses";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
-
-
 
 const ExpenseListPage: React.FC = () => {
   const [expenses, setExpenses] = useState<IExpense[]>([]);
@@ -36,12 +33,11 @@ const ExpenseListPage: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [totalItems, setTotalItems] = useState<number>(0);
 
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
   const [monthFilter, setMonthFilter] = useState<string>("");
 
-  const {user} = UserAuth();
-
+  const { user } = UserAuth();
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -52,7 +48,7 @@ const ExpenseListPage: React.FC = () => {
           params: {
             page: page + 1,
             limit: rowsPerPage,
-            monthFilter: monthFilter || undefined, 
+            monthFilter: monthFilter || undefined,
           },
         });
         setExpenses(response.data.data);
@@ -88,7 +84,6 @@ const ExpenseListPage: React.FC = () => {
     setPage(0);
   };
 
-
   const handleDetail = async (id: string | null) => {
     if (id) {
       navigate(`/detail/${id}`);
@@ -98,103 +93,124 @@ const ExpenseListPage: React.FC = () => {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/edit/${id}`); // Navigate to the expense details page
+    navigate(`/edit/${id}`);
+  };
 
   const handleMonthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMonthFilter(event.target.value);
-    setPage(0); 
-
+    setPage(0);
   };
-
 
   return (
-      <Container maxWidth="lg" sx={{ mt: 5 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          Potni stroški službenih poti
-        </Typography>
-        <Box display="flex" justifyContent="center" mb={3}>
-          <TextField
-            label="Filter by Month"
-            type="month"
-            value={monthFilter}
-            onChange={handleMonthChange}
-            variant="outlined" 
-            InputLabelProps={{ shrink: true }} 
-            sx={{
-              width: "300px",
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "8px", 
-              },
-            }}
-          />
+    <Container maxWidth="lg" sx={{ mt: 5 }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Potni stroški službenih poti
+      </Typography>
+      <Box display="flex" justifyContent="center" mb={3}>
+        <TextField
+          label="Filter by Month"
+          type="month"
+          value={monthFilter}
+          onChange={handleMonthChange}
+          variant="outlined"
+          InputLabelProps={{ shrink: true }}
+          sx={{
+            width: "300px",
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "8px",
+            },
+          }}
+        />
+      </Box>
+
+      {loading ? (
+        <Box display="flex" justifyContent="center" my={3}>
+          <CircularProgress />
         </Box>
-    
-        {loading ? (
-          <Box display="flex" justifyContent="center" my={3}>
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Typography color="error" align="center">
-            {error}
-          </Typography>
-        ) : (
-          <Paper elevation={3} sx={{ mt: 2 }}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center"><strong>Datum odhoda</strong></TableCell>
-                    <TableCell align="center"><strong>Datum prihoda</strong></TableCell>
-                    <TableCell align="center"><strong>Naziv</strong></TableCell>
-                    <TableCell align="center"><strong>Delavec</strong></TableCell>
-                    <TableCell align="center" colSpan={3}><strong></strong></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {expenses.map((expense) => (
-                    <TableRow key={expense.id} hover>
-                      <TableCell align="center">{expense.datum_odhoda}</TableCell>
-                      <TableCell align="center">{expense.datum_prihoda}</TableCell>
-                      <TableCell align="center">{expense.naziv}</TableCell>
-                      <TableCell align="center">
-                        <Link to={`/user/${expense.oseba}/expenses`}>
-                          {expense.oseba}
-                        </Link>
-                      
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button onClick={() => handleDetail(expense.id)}>
-                          <img src={detailsIcon} alt="Details" width="24" height="24" /></Button>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button onClick={() => handleEdit(expense.id)}>
+      ) : error ? (
+        <Typography color="error" align="center">
+          {error}
+        </Typography>
+      ) : (
+        <Paper elevation={3} sx={{ mt: 2 }}>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">
+                    <strong>Datum odhoda</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Datum prihoda</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Naziv</strong>
+                  </TableCell>
+                  <TableCell align="center">
+                    <strong>Delavec</strong>
+                  </TableCell>
+                  <TableCell align="center" colSpan={3}>
+                    <strong></strong>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {expenses.map((expense) => (
+                  <TableRow key={expense.id} hover>
+                    <TableCell align="center">{expense.datum_odhoda}</TableCell>
+                    <TableCell align="center">
+                      {expense.datum_prihoda}
+                    </TableCell>
+                    <TableCell align="center">{expense.naziv}</TableCell>
+                    <TableCell align="center">
+                      <Link to={`/user/${expense.oseba}/expenses`}>
+                        {expense.oseba}
+                      </Link>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button onClick={() => handleDetail(expense.id)}>
+                        <img
+                          src={detailsIcon}
+                          alt="Details"
+                          width="24"
+                          height="24"
+                        />
+                      </Button>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button onClick={() => handleEdit(expense.id)}>
                         <img src={editIcon} alt="Edit" width="24" height="24" />
-                        </Button>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button onClick={() => handleDelete(expense.id)}>
-                        <img src={deleteIcon} alt="Delete" width="24" height="24" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-    
-            <TablePagination
-              component="div"
-              count={totalItems}
-              page={page}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              sx={{ px: 2 }}
-            />
-          </Paper>
-        )}
-      </Container>
-    );
-  };
-}
+                      </Button>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button onClick={() => handleDelete(expense.id)}>
+                        <img
+                          src={deleteIcon}
+                          alt="Delete"
+                          width="24"
+                          height="24"
+                        />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePagination
+            component="div"
+            count={totalItems}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{ px: 2 }}
+          />
+        </Paper>
+      )}
+    </Container>
+  );
+};
+
 export default ExpenseListPage;
