@@ -13,8 +13,6 @@ import Login from './validation/Login';
 import Register from './validation/Registration';
 import Logout from './validation/Logout';
 import Routing from './components/Routing';
-import UserRouting from './components/UserRouting';
-import EmployeeRouting from './components/EmployeeRouting';
 
 
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button} from '@mui/material';
 import { Link } from 'react-router-dom';
 import { UserAuth } from '../context/AuthContext';
 
