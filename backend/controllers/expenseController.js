@@ -206,6 +206,24 @@ async function vsotaStroskovPoOsebi(req, res) {
   }
 }
 
+async function analizaStroskovPoLokacijah(req, res) {
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    return res.status(400).json({
+      error: "Parametra 'startDate' in 'endDate' sta obvezna.",
+    });
+  }
+
+  try {
+    const analysis = await Expense.getExpenseAnalysisByLocation(startDate, endDate);
+    res.status(200).json(analysis);
+  } catch (error) {
+    res.status(500).json({ details: error.message });
+  }
+}
+
+
 module.exports = {
   dodajStrosek,
   vsiStroski,
@@ -214,4 +232,5 @@ module.exports = {
   izbrisiStrosek,
   stroskiPoOsebi,
   vsotaStroskovPoOsebi,
+  analizaStroskovPoLokacijah,
 };

@@ -10,6 +10,7 @@ jest.mock("../models/expense", () => ({
   getByEmails: jest.fn(),
   getByUserEmail: jest.fn(),
   getByMonth: jest.fn(),
+  getExpenseAnalysisByLocation: jest.fn(),
 }));
 
 describe("Expense Model Tests", () => {
@@ -107,4 +108,66 @@ describe("Expense Model Tests", () => {
 
     await expect(Expense.delete("nonexistent")).rejects.toThrow("Strosek ne obstaja");
   });
+
+  test("getExpenseAnalysisByLocation - successfully analyzes expenses by location", async () => {
+    const mockAnalysis = [
+      { lokacija: "Ljubljana", total: 1250.5 },
+      { lokacija: "Maribor", total: 980.0 },
+    ];
+  
+    Expense.getExpenseAnalysisByLocation.mockResolvedValue(mockAnalysis);
+  
+    const result = await Expense.getExpenseAnalysisByLocation("2024-01-01", "2024-12-31");
+    expect(Expense.getExpenseAnalysisByLocation).toHaveBeenCalledWith("2024-01-01", "2024-12-31");
+    expect(result).toEqual(mockAnalysis);
+  });
+  
+  test("getExpenseAnalysisByLocation - handles empty results", async () => {
+    Expense.getExpenseAnalysisByLocation.mockResolvedValue([]);
+  
+    const result = await Expense.getExpenseAnalysisByLocation("2024-01-01", "2024-12-31");
+    expect(Expense.getExpenseAnalysisByLocation).toHaveBeenCalledWith("2024-01-01", "2024-12-31");
+    expect(result).toEqual([]);
+  });
+  
+  test("getExpenseAnalysisByLocation - fails with invalid date range", async () => {
+    Expense.getExpenseAnalysisByLocation.mockRejectedValue(
+      new Error("Napaka: Neveljaven datumski razpon.")
+    );
+  
+    await expect(Expense.getExpenseAnalysisByLocation("2024-12-31", "2024-01-01")).rejects.toThrow(
+      "Napaka: Neveljaven datumski razpon."
+    );
+    expect(Expense.getExpenseAnalysisByLocation).toHaveBeenCalledWith(
+      "2024-12-31",
+      "2024-01-01"
+    );
+  });
+  
+  test("getExpenseAnalysisByLocation - handles database errors gracefully", async () => {
+    Expense.getExpenseAnalysisByLocation.mockRejectedValue(
+      new Error("Napaka pri dostopu do baze podatkov.")
+    );
+  
+    await expect(Expense.getExpenseAnalysisByLocation("2024-01-01", "2024-12-31")).rejects.toThrow(
+      "Napaka pri dostopu do baze podatkov."
+    );
+    expect(Expense.getExpenseAnalysisByLocation).toHaveBeenCalledWith(
+      "2024-01-01",
+      "2024-12-31"
+    );
+  });
+
+  test("getExpenseAnalysisByLocation - fails with missing parameters", async () => {
+    Expense.getExpenseAnalysisByLocation.mockRejectedValue(
+      new Error("Napaka: Manjkajo parametri startDate in endDate.")
+    );
+  
+    await expect(Expense.getExpenseAnalysisByLocation(undefined, undefined)).rejects.toThrow(
+      "Napaka: Manjkajo parametri startDate in endDate."
+    );
+  
+    expect(Expense.getExpenseAnalysisByLocation).toHaveBeenCalledWith(undefined, undefined);
+  });
+  
 });

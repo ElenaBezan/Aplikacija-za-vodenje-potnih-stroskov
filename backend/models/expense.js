@@ -182,6 +182,40 @@ class Expense {
 
     return expenses;
   }
+
+  static async getExpenseAnalysisByLocation(startDate, endDate) {
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+  
+      const snapshot = await db.collection("Potni_stroski").get();
+      const data = snapshot.docs
+        .map((doc) => doc.data())
+        .filter((expense) => {
+          const expenseDate = new Date(expense.datum_odhoda);
+          return expenseDate >= start && expenseDate <= end;
+        });
+  
+      const locationAnalysis = data.reduce((result, expense) => {
+        const { lokacija, cena } = expense;
+        if (!result[lokacija]) {
+          result[lokacija] = 0;
+        }
+        result[lokacija] += cena;
+        return result;
+      }, {});
+  
+      const formattedResult = Object.entries(locationAnalysis).map(([lokacija, total]) => ({
+        lokacija,
+        total: parseFloat(total.toFixed(2)),
+      }));
+  
+      return formattedResult;
+    } catch (error) {
+      throw new Error(`Error analyzing expenses by location: ${error.message}`);
+    }
+  }
+  
 }
 
 module.exports = Expense;
